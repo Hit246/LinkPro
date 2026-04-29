@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 
+// ✅ PUT
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await context.params
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json(
@@ -19,7 +22,7 @@ export async function PUT(
         const { title, url, icon, isActive } = body
 
         const link = await prisma.link.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: { profile: true },
         })
 
@@ -38,7 +41,7 @@ export async function PUT(
         }
 
         const updatedLink = await prisma.link.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 ...(title && { title }),
                 ...(url && { url }),
@@ -57,11 +60,14 @@ export async function PUT(
     }
 }
 
+// ✅ DELETE
 export async function DELETE(
     _request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await context.params
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json(
@@ -71,7 +77,7 @@ export async function DELETE(
         }
 
         const link = await prisma.link.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: { profile: true },
         })
 
@@ -90,7 +96,7 @@ export async function DELETE(
         }
 
         await prisma.link.delete({
-            where: { id: params.id },
+            where: { id },
         })
 
         return NextResponse.json({ data: null, error: null })
