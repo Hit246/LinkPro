@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  username  String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  profile   Profile?
+  
+  @@map("users")
+}
+
+model Profile {
+  id            String           @id @default(cuid())
+  userId        String           @unique
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName   String           @default("")
+  bio           String           @default("")
+  bioLanguage   String           @default("en")
+  avatarUrl     String?
+  themeColor    String           @default("#000000")
+  upiId         String?
+  upiLabel      String           @default("Support me")
+  isPublished   Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  links         Link[]
+  analyticsEvents AnalyticsEvent[]
+  
+  @@map("profiles")
+}
+
+model Link {
+  id              String           @id @default(cuid())
+  profileId       String
+  profile         Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title           String
+  url             String
+  icon            String           @default("custom")
+  position        Int
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  analyticsEvents AnalyticsEvent[]
+  
+  @@map("links")
+  @@index([profileId])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  linkId    String?
+  link      Link?    @relation(fields: [linkId], references: [id], onDelete: SetNull)
+  eventType String
+  referrer  String?
+  device    String   @default("mobile")
+  country   String   @default("IN")
+  createdAt DateTime @default(now())
+  
+  @@map("analytics_events")
+  @@index([profileId])
+  @@index([linkId])
+  @@index([createdAt])
+}
