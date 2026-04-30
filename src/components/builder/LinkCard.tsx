@@ -120,7 +120,7 @@ export function LinkCard({ link, onDelete, onToggle }: LinkCardProps) {
                                 : 'hover:bg-gray-100'
                                 }`}
                         >
-                            {opt.label}
+                            {opt.name}
                         </button>
                     ))}
                 </div>

@@ -30,7 +30,7 @@ export function LinkStatsTable({ data }: LinkStatsTableProps) {
                         </thead>
 
                         <tbody>
-                            {data.map((link, i) => {
+                            {data.map((link) => {
                                 const percent =
                                     totalClicks > 0
                                         ? (link.clicks / totalClicks) * 100

@@ -20,6 +20,12 @@ const ICON_OPTIONS = [
     { value: 'custom', icon: FaLink, name: 'Custom' },
 ]
 
+interface AddLinkModalProps {
+    isOpen: boolean
+    onClose: () => void
+    onLinkAdded: () => void
+}
+
 export function AddLinkModal({ isOpen, onClose, onLinkAdded }: AddLinkModalProps) {
     const [formData, setFormData] = useState({
         title: '',
